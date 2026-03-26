@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Detail MAPE - DASH Meal</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: linear-gradient(135deg, #fce7f3 0%, #e9d5ff 50%, #ddd6fe 100%);
+      min-height: 100vh;
+      padding: 0;
+    }
+    
+    .container {
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
+    
+    /* SIDEBAR */
+    .sidebar {
+      width: 280px;
+      background: linear-gradient(180deg, #f472b6 0%, #c084fc 100%);
+      padding: 30px 20px;
+      box-shadow: 4px 0 20px rgba(0,0,0,0.1);
+      overflow-y: auto;
+    }
+    
+    .sidebar-header {
+      color: white;
+      margin-bottom: 30px;
+    }
+    
+    .sidebar-header h2 {
+      font-size: 24px;
+      margin-bottom: 8px;
+    }
+    
+    .sidebar-header p {
+      font-size: 14px;
+      opacity: 0.9;
+    }
+    
+    .top-nav {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    
+    .top-btn {
+      background: rgba(255,255,255,0.15);
+      color: white;
+      border: 2px solid rgba(255,255,255,0.3);
+      padding: 16px 20px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 600;
+      transition: all 0.3s;
+      text-align: left;
+    }
+    
+    .top-btn:hover {
+      background: rgba(255,255,255,0.25);
+      border-color: rgba(255,255,255,0.5);
+      transform: translateX(5px);
+    }
+    
+    .top-btn.active {
+      background: white;
+      color: #ec4899;
+      border-color: white;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+    
+    .top-btn .rank {
+      font-size: 20px;
+      display: block;
+      margin-bottom: 4px;
+    }
+    
+    .top-btn .arm-id {
+      font-size: 13px;
+      opacity: 0.8;
+    }
+    
+    .back-btn {
+      margin-top: 30px;
+      background: rgba(255,255,255,0.2);
+      color: white;
+      border: 2px solid rgba(255,255,255,0.4);
+      padding: 14px 20px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 15px;
+      font-weight: 600;
+      text-decoration: none;
+      display: block;
+      text-align: center;
+      transition: all 0.3s;
+    }
+    
+    .back-btn:hover {
+      background: rgba(255,255,255,0.3);
+    }
+    
+    /* MAIN CONTENT */
+    .main-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 50px 60px;
+    }
+    
+    .page-header {
+      margin-bottom: 40px;
+      text-align: center;
+    }
+    
+    .page-header h1 {
+      font-size: 42px;
+      color: #ec4899;
+      margin-bottom: 8px;
+    }
+    
+    .page-header .arm-id-display {
+      font-size: 20px;
+      color: #6b7280;
+    }
+    
+    .page-header .arm-id-display strong {
+      color: #1f2937;
+    }
+    
+    /* SECTION 1: NUTRISI & TARGET */
+    .section {
+      background: white;
+      border-radius: 20px;
+      padding: 40px;
+      margin-bottom: 30px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    }
+    
+    .section-title {
+      font-size: 28px;
+      color: #1f2937;
+      margin-bottom: 24px;
+      font-weight: 700;
+    }
+    
+    .nutrisi-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+      margin-bottom: 32px;
+    }
+    
+    .nutrisi-item {
+      background: linear-gradient(135deg, #fef3c7 5%, #fce7f3 100%);
+      padding: 20px;
+      border-radius: 12px;
+      border: 2px solid #f3e8ff;
+    }
+    
+    .nutrisi-item .label {
+      font-size: 14px;
+      color: #6b7280;
+      margin-bottom: 6px;
+    }
+    
+    .nutrisi-item .value {
+      font-size: 24px;
+      font-weight: 700;
+      color: #ec4899;
+    }
+    
+    .nutrisi-item .unit {
+      font-size: 16px;
+      color: #9ca3af;
+      margin-left: 4px;
+    }
+    
+    .target-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+      margin-bottom: 32px;
+    }
+    
+    .target-item {
+      background: linear-gradient(135deg, #ddd6fe 5%, #fce7f3 100%);
+      padding: 20px;
+      border-radius: 12px;
+      border: 2px solid #e9d5ff;
+    }
+    
+    .target-item .label {
+      font-size: 14px;
+      color: #6b7280;
+      margin-bottom: 6px;
+    }
+    
+    .target-item .range {
+      font-size: 20px;
+      font-weight: 700;
+      color: #a855f7;
+    }
+    
+    .target-item .unit {
+      font-size: 14px;
+      color: #9ca3af;
+      margin-left: 4px;
+    }
+
+    .target-item.limited {
+      background: linear-gradient(135deg, #fee2e2 5%, #fce7f3 100%);
+      border: 2px solid #fca5a5;
+    }
+
+    .target-item.limited .range {
+      color: #dc2626;
+    }
+
+    .target-item.limited .label {
+      color: #991b1b;
+    }
+    
+    .mape-box {
+      background: linear-gradient(135deg, #f472b6 0%, #c084fc 100%);
+      color: white;
+      padding: 30px;
+      border-radius: 16px;
+      text-align: center;
+      box-shadow: 0 6px 24px rgba(244,114,182,0.4);
+    }
+    
+    .mape-box .label {
+      font-size: 18px;
+      margin-bottom: 8px;
+      opacity: 0.9;
+    }
+    
+    .mape-box .value {
+      font-size: 48px;
+      font-weight: 800;
+    }
+    
+    /* SECTION 2: PER WAKTU MAKAN (CAROUSEL) */
+    .carousel-container {
+      position: relative;
+    }
+    
+    .carousel {
+      overflow: hidden;
+      border-radius: 16px;
+    }
+    
+    .carousel-track {
+      display: flex;
+      transition: transform 0.4s ease-in-out;
+    }
+    
+    .meal-card {
+      min-width: 100%;
+      background: white;
+      padding: 40px;
+    }
+    
+    .meal-title {
+      font-size: 36px;
+      font-weight: 700;
+      margin-bottom: 30px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .meal-title.sarapan { color: #f59e0b; }
+    .meal-title.siang { color: #ec4899; }
+    .meal-title.malam { color: #a855f7; }
+    
+    .menu-items {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 30px;
+    }
+    
+    .menu-box {
+      background: #fafafa;
+      padding: 24px;
+      border-radius: 12px;
+      border-left: 4px solid #f472b6;
+    }
+    
+    .menu-box.lauk { border-left-color: #ef4444; }
+    .menu-box.sayur { border-left-color: #10b981; }
+    .menu-box.buah { border-left-color: #f59e0b; }
+    .menu-box.susu { border-left-color: #3b82f6; }
+    .menu-box.nasi { border-left-color: #fbbf24; }
+    
+    .menu-box .label {
+      font-size: 14px;
+      color: #6b7280;
+      text-transform: uppercase;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+    
+    .menu-box .nama {
+      font-size: 18px;
+      color: #1f2937;
+      font-weight: 600;
+      line-height: 1.4;
+    }
+    
+    .total-nutrisi-meal {
+      background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+      padding: 28px;
+      border-radius: 12px;
+    }
+    
+    .total-nutrisi-meal h4 {
+      font-size: 20px;
+      color: #1f2937;
+      margin-bottom: 18px;
+      font-weight: 700;
+    }
+    
+    .total-nutrisi-meal .mini-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+    }
+    
+    .total-nutrisi-meal .mini-item {
+      font-size: 16px;
+      color: #4b5563;
+      line-height: 1.5;
+    }
+    
+    .total-nutrisi-meal .mini-item strong {
+      color: #1f2937;
+      font-weight: 700;
+    }
+    
+    /* CAROUSEL CONTROLS */
+    .carousel-btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(255,255,255,0.95);
+      color: #ec4899;
+      border: none;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      font-size: 24px;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      transition: all 0.3s;
+      z-index: 10;
+    }
+    
+    .carousel-btn:hover {
+      background: #f472b6;
+      color: white;
+      transform: translateY(-50%) scale(1.1);
+    }
+    
+    .carousel-btn.prev { left: -25px; }
+    .carousel-btn.next { right: -25px; }
+    
+    .carousel-indicators {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin-top: 20px;
+    }
+    
+    .indicator {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #d1d5db;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .indicator.active {
+      background: #f472b6;
+      width: 32px;
+      border-radius: 6px;
+    }
+    
+    @media (max-width: 1024px) {
+      .container { flex-direction: column; }
+      .sidebar { width: 100%; height: auto; }
+      .top-nav { flex-direction: row; overflow-x: auto; }
+      .main-content { padding: 30px 20px; }
+      .nutrisi-grid, .target-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+      <div class="sidebar-header">
+        <h2>🏆 Top 5 Arms</h2>
+        <p>Pilih untuk melihat detail MAPE</p>
+      </div>
+      <div class="top-nav">
+        {% for i in range(1, 6) %}
+        <button class="top-btn {% if current_rank == i %}active{% endif %}" 
+                onclick="window.location.href='/detail_mape/{{ i }}'">
+          <span class="rank">Top {{ i }}</span>
+          <span class="arm-id">Arm ID: {{ top_arms[i-1].arm_id }}</span>
+        </button>
+        {% endfor %}
+      </div>
+      <a href="/hasil" class="back-btn">← Kembali ke Hasil</a>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="main-content">
+      <div class="page-header">
+        <h1>Top {{ current_rank }}</h1>
+        <p class="arm-id-display">Arm ID: <strong>{{ arm.arm_id }}</strong></p>
+      </div>
+
+      <!-- SECTION 1: NUTRISI & TARGET -->
+      <div class="section">
+        <h2 class="section-title">📊 Total Nutrisi Arm</h2>
+        <div class="nutrisi-grid">
+          <div class="nutrisi-item">
+            <div class="label">Kalori</div>
+            <div class="value">{{ arm.total_kalori|round|int }}<span class="unit">kkal</span></div>
+          </div>
+          <div class="nutrisi-item">
+            <div class="label">Karbohidrat</div>
+            <div class="value">{{ arm.total_karbohidrat|round|int }}<span class="unit">g</span></div>
+          </div>
+          <div class="nutrisi-item">
+            <div class="label">Protein</div>
+            <div class="value">{{ arm.total_protein|round|int }}<span class="unit">g</span></div>
+          </div>
+          <div class="nutrisi-item">
+            <div class="label">Lemak</div>
+            <div class="value">{{ arm.total_lemak|round|int }}<span class="unit">g</span></div>
+          </div>
+          <div class="nutrisi-item">
+            <div class="label">Lemak Jenuh</div>
+            <div class="value">{{ arm.total_lemak_jenuh|round|int }}<span class="unit">g</span></div>
+          </div>
+          <div class="nutrisi-item">
+            <div class="label">Kolesterol</div>
+            <div class="value">{{ arm.total_kolesterol|round|int }}<span class="unit">mg</span></div>
+          </div>
+          <div class="nutrisi-item">
+            <div class="label">Natrium</div>
+            <div class="value">{{ arm.total_natrium|round|int }}<span class="unit">mg</span></div>
+          </div>
+          <div class="nutrisi-item">
+            <div class="label">Kalium</div>
+            <div class="value">{{ arm.total_kalium|round|int }}<span class="unit">mg</span></div>
+          </div>
+          <div class="nutrisi-item">
+            <div class="label">Serat</div>
+            <div class="value">{{ arm.total_serat|round|int }}<span class="unit">g</span></div>
+          </div>
+        </div>
+
+        <h2 class="section-title">🎯 Target Kebutuhan Nutrisi Harian</h2>
+        <div class="target-grid">
+          <div class="target-item">
+            <div class="label">Kalori</div>
+            <div class="range">{{ (kebutuhan.kalori * 0.9)|round|int }} - {{ (kebutuhan.kalori * 1.1)|round|int }}<span class="unit">kkal</span></div>
+          </div>
+          <div class="target-item">
+            <div class="label">Karbohidrat</div>
+            <div class="range">{{ (kebutuhan.karbohidrat * 0.9)|round|int }} - {{ (kebutuhan.karbohidrat * 1.1)|round|int }}<span class="unit">g</span></div>
+          </div>
+          <div class="target-item">
+            <div class="label">Protein</div>
+            <div class="range">{{ (kebutuhan.protein * 0.9)|round|int }} - {{ (kebutuhan.protein * 1.1)|round|int }}<span class="unit">g</span></div>
+          </div>
+          <div class="target-item">
+            <div class="label">Lemak</div>
+            <div class="range">{{ (kebutuhan.lemak * 0.9)|round|int }} - {{ (kebutuhan.lemak * 1.1)|round|int }}<span class="unit">g</span></div>
+          </div>
+          <div class="target-item limited">
+            <div class="label">Lemak Jenuh (Max)</div>
+            <div class="range">≤ {{ (kebutuhan.lemak_jenuh * 1.1)|round|int }}<span class="unit">g</span></div>
+          </div>
+          <div class="target-item limited">
+            <div class="label">Kolesterol</div>
+            <div class="range">≤ {{ (150 * 1.1)|round|int }}<span class="unit">mg</span></div>
+          </div>
+          <div class="target-item limited">
+            <div class="label">Natrium</div>
+            <div class="range">≤ {{ (kebutuhan.natrium * 1.1)|round|int }}<span class="unit">mg</span></div>
+          </div>
+          <div class="target-item">
+            <div class="label">Kalium</div>
+            <div class="range">{{ (kebutuhan.kalium * 0.9)|round|int }} - {{ (kebutuhan.kalium * 1.1)|round|int }}<span class="unit">mg</span></div>
+          </div>
+          <div class="target-item">
+            <div class="label">Serat</div>
+            <div class="range">{{ (kebutuhan.serat * 0.9)|round|int }} - {{ (kebutuhan.serat * 1.1)|round|int }}<span class="unit">g</span></div>
+          </div>
+        </div>
+
+        <div class="mape-box">
+          <div class="label">Mean Absolute Percentage Error (MAPE)</div>
+          <div class="value">{{ arm.mape|round(2) }}%</div>
+        </div>
+      </div>
+
+      <!-- SECTION 2: PER WAKTU MAKAN (CAROUSEL) -->
+      <div class="section">
+        <h2 class="section-title">🍽️ Detail Menu Per Waktu Makan</h2>
+        <div class="carousel-container">
+          <button class="carousel-btn prev" onclick="prevSlide()">‹</button>
+          <div class="carousel">
+            <div class="carousel-track" id="carousel-track">
+              
+              <!-- SARAPAN -->
+              <div class="meal-card">
+                <h3 class="meal-title sarapan">🌅 Sarapan</h3>
+                <div class="menu-items">
+                  {% if arm.sarapan_lauk %}
+                  <div class="menu-box lauk">
+                    <div class="label">🍗 Lauk</div>
+                    <div class="nama">{{ arm.sarapan_lauk }}</div>
+                  </div>
+                  {% endif %}
+                  {% if arm.sarapan_sayur %}
+                  <div class="menu-box sayur">
+                    <div class="label">🥬 Sayur</div>
+                    <div class="nama">{{ arm.sarapan_sayur }}</div>
+                  </div>
+                  {% endif %}
+                  {% if arm.sarapan_buah %}
+                  <div class="menu-box buah">
+                    <div class="label">🍎 Buah</div>
+                    <div class="nama">{{ arm.sarapan_buah }}</div>
+                  </div>
+                  {% endif %}
+                  <div class="menu-box susu">
+                    <div class="label">🥛 Susu</div>
+                    <div class="nama">{% if arm.sarapan_susu and arm.sarapan_susu not in ['-', 'None', 'nan'] and arm.sarapan_susu|string|lower not in ['none', 'nan'] %}{{ arm.sarapan_susu }}{% else %}-{% endif %}</div>
+                  </div>
+                  <div class="menu-box nasi">
+                    <div class="label">🍚 Nasi</div>
+                    <div class="nama">{% if arm.nasi_sarapan and 'porsi' in arm.nasi_sarapan|string %}{{ arm.nasi_sarapan.split('(')[0].strip() }}{% elif arm.nasi_sarapan %}{{ arm.nasi_sarapan }}{% else %}-{% endif %}</div>
+                  </div>
+                </div>
+                <div class="total-nutrisi-meal">
+                  <h4>📊 Total Nutrisi Sarapan</h4>
+                  <div class="mini-grid">
+                    <div class="mini-item"><strong>Kalori:</strong> {{ (arm.sarapan_kalori)|round|int }} kkal</div>
+                    <div class="mini-item"><strong>Karbo:</strong> {{ (arm.sarapan_karbohidrat)|round|int }} g</div>
+                    <div class="mini-item"><strong>Protein:</strong> {{ (arm.sarapan_protein)|round|int }} g</div>
+                    <div class="mini-item"><strong>Lemak:</strong> {{ (arm.sarapan_lemak)|round|int }} g</div>
+                    <div class="mini-item"><strong>Lemak Jenuh:</strong> {{ (arm.sarapan_lemak_jenuh)|round|int }} g</div>
+                    <div class="mini-item"><strong>Kolesterol:</strong> {{ (arm.sarapan_kolesterol)|round|int }} mg</div>
+                    <div class="mini-item"><strong>Natrium:</strong> {{ (arm.sarapan_natrium)|round|int }} mg</div>
+                    <div class="mini-item"><strong>Kalium:</strong> {{ (arm.sarapan_kalium)|round|int }} mg</div>
+                    <div class="mini-item"><strong>Serat:</strong> {{ (arm.sarapan_serat)|round|int }} g</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- SIANG -->
+              <div class="meal-card">
+                <h3 class="meal-title siang">☀️ Makan Siang</h3>
+                <div class="menu-items">
+                  {% if arm.siang_lauk %}
+                  <div class="menu-box lauk">
+                    <div class="label">🍗 Lauk</div>
+                    <div class="nama">{{ arm.siang_lauk }}</div>
+                  </div>
+                  {% endif %}
+                  {% if arm.siang_sayur %}
+                  <div class="menu-box sayur">
+                    <div class="label">🥬 Sayur</div>
+                    <div class="nama">{{ arm.siang_sayur }}</div>
+                  </div>
+                  {% endif %}
+                  {% if arm.siang_buah %}
+                  <div class="menu-box buah">
+                    <div class="label">🍎 Buah</div>
+                    <div class="nama">{{ arm.siang_buah }}</div>
+                  </div>
+                  {% endif %}
+                  <div class="menu-box susu">
+                    <div class="label">🥛 Susu</div>
+                    <div class="nama">{% if arm.siang_susu and arm.siang_susu not in ['-', 'None', 'nan'] and arm.siang_susu|string|lower not in ['none', 'nan'] %}{{ arm.siang_susu }}{% else %}-{% endif %}</div>
+                  </div>
+                  <div class="menu-box nasi">
+                    <div class="label">🍚 Nasi</div>
+                    <div class="nama">{% if arm.nasi_siang and 'porsi' in arm.nasi_siang|string %}{{ arm.nasi_siang.split('(')[0].strip() }}{% elif arm.nasi_siang %}{{ arm.nasi_siang }}{% else %}-{% endif %}</div>
+                  </div>
+                </div>
+                <div class="total-nutrisi-meal">
+                  <h4>📊 Total Nutrisi Makan Siang</h4>
+                  <div class="mini-grid">
+                    <div class="mini-item"><strong>Kalori:</strong> {{ (arm.siang_kalori)|round|int }} kkal</div>
+                    <div class="mini-item"><strong>Karbo:</strong> {{ (arm.siang_karbohidrat)|round|int }} g</div>
+                    <div class="mini-item"><strong>Protein:</strong> {{ (arm.siang_protein)|round|int }} g</div>
+                    <div class="mini-item"><strong>Lemak:</strong> {{ (arm.siang_lemak)|round|int }} g</div>
+                    <div class="mini-item"><strong>Lemak Jenuh:</strong> {{ (arm.siang_lemak_jenuh)|round|int }} g</div>
+                    <div class="mini-item"><strong>Kolesterol:</strong> {{ (arm.siang_kolesterol)|round|int }} mg</div>
+                    <div class="mini-item"><strong>Natrium:</strong> {{ (arm.siang_natrium)|round|int }} mg</div>
+                    <div class="mini-item"><strong>Kalium:</strong> {{ (arm.siang_kalium)|round|int }} mg</div>
+                    <div class="mini-item"><strong>Serat:</strong> {{ (arm.siang_serat)|round|int }} g</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- MALAM -->
+              <div class="meal-card">
+                <h3 class="meal-title malam">🌙 Makan Malam</h3>
+                <div class="menu-items">
+                  {% if arm.malam_lauk %}
+                  <div class="menu-box lauk">
+                    <div class="label">🍗 Lauk</div>
+                    <div class="nama">{{ arm.malam_lauk }}</div>
+                  </div>
+                  {% endif %}
+                  {% if arm.malam_sayur %}
+                  <div class="menu-box sayur">
+                    <div class="label">🥬 Sayur</div>
+                    <div class="nama">{{ arm.malam_sayur }}</div>
+                  </div>
+                  {% endif %}
+                  {% if arm.malam_buah %}
+                  <div class="menu-box buah">
+                    <div class="label">🍎 Buah</div>
+                    <div class="nama">{{ arm.malam_buah }}</div>
+                  </div>
+                  {% endif %}
+                  <div class="menu-box susu">
+                    <div class="label">🥛 Susu</div>
+                    <div class="nama">{% if arm.malam_susu and arm.malam_susu not in ['-', 'None', 'nan'] and arm.malam_susu|string|lower not in ['none', 'nan'] %}{{ arm.malam_susu }}{% else %}-{% endif %}</div>
+                  </div>
+                  <div class="menu-box nasi">
+                    <div class="label">🍚 Nasi</div>
+                    <div class="nama">{% if arm.nasi_malam and 'porsi' in arm.nasi_malam|string %}{{ arm.nasi_malam.split('(')[0].strip() }}{% elif arm.nasi_malam %}{{ arm.nasi_malam }}{% else %}-{% endif %}</div>
+                  </div>
+                </div>
+                <div class="total-nutrisi-meal">
+                  <h4>📊 Total Nutrisi Makan Malam</h4>
+                  <div class="mini-grid">
+                    <div class="mini-item"><strong>Kalori:</strong> {{ (arm.malam_kalori)|round|int }} kkal</div>
+                    <div class="mini-item"><strong>Karbo:</strong> {{ (arm.malam_karbohidrat)|round|int }} g</div>
+                    <div class="mini-item"><strong>Protein:</strong> {{ (arm.malam_protein)|round|int }} g</div>
+                    <div class="mini-item"><strong>Lemak:</strong> {{ (arm.malam_lemak)|round|int }} g</div>
+                    <div class="mini-item"><strong>Lemak Jenuh:</strong> {{ (arm.malam_lemak_jenuh)|round|int }} g</div>
+                    <div class="mini-item"><strong>Kolesterol:</strong> {{ (arm.malam_kolesterol)|round|int }} mg</div>
+                    <div class="mini-item"><strong>Natrium:</strong> {{ (arm.malam_natrium)|round|int }} mg</div>
+                    <div class="mini-item"><strong>Kalium:</strong> {{ (arm.malam_kalium)|round|int }} mg</div>
+                    <div class="mini-item"><strong>Serat:</strong> {{ (arm.malam_serat)|round|int }} g</div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+          <button class="carousel-btn next" onclick="nextSlide()">›</button>
+        </div>
+        <div class="carousel-indicators">
+          <div class="indicator active" onclick="goToSlide(0)"></div>
+          <div class="indicator" onclick="goToSlide(1)"></div>
+          <div class="indicator" onclick="goToSlide(2)"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let currentSlide = 0;
+    const totalSlides = 3;
+
+    function updateCarousel() {
+      const track = document.getElementById('carousel-track');
+      track.style.transform = `translateX(-${currentSlide * 100}%)`;
+      
+      // Update indicators
+      document.querySelectorAll('.indicator').forEach((ind, idx) => {
+        ind.classList.toggle('active', idx === currentSlide);
+      });
+    }
+
+    function nextSlide() {
+      currentSlide = (currentSlide + 1) % totalSlides;
+      updateCarousel();
+    }
+
+    function prevSlide() {
+      currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
+      updateCarousel();
+    }
+
+    function goToSlide(index) {
+      currentSlide = index;
+      updateCarousel();
+    }
+
+    // Keyboard navigation
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft') prevSlide();
+      if (e.key === 'ArrowRight') nextSlide();
+    });
+  </script>
+</body>
+</html>

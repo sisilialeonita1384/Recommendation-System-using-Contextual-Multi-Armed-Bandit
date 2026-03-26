@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Hasil Evaluasi - DASH Meal</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Segoe UI',Arial,sans-serif;
+         background:linear-gradient(135deg,#fce7f3 0%,#e9d5ff 50%,#ddd6fe 100%);
+         padding:30px 20px;min-height:100vh}
+    .wrap{max-width:920px;margin:0 auto}
+    .card{background:#fff;border-radius:16px;
+          box-shadow:0 6px 24px rgba(0,0,0,0.08);
+          padding:32px;margin-bottom:20px}
+    .header-card{
+      background:linear-gradient(135deg,#f472b6 0%,#c084fc 100%);
+      color:white;padding:40px;text-align:center;
+    }
+    .logo{font-size:24px;font-weight:800;margin-bottom:10px}
+    h1{color:white;font-size:28px;margin-bottom:8px}
+    .card h1{color:#ec4899;font-size:24px;margin-bottom:8px}
+    h2{color:#ec4899;font-size:18px;border-bottom:2px solid #fce7f3;
+       padding-bottom:10px;margin-bottom:18px;font-weight:700}
+    .sub{font-size:15px;opacity:0.9;margin-bottom:5px}
+    .g3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:18px 0}
+    .stat{background:linear-gradient(135deg,#fef3c7 5%,#fce7f3 100%);
+          border-radius:12px;padding:20px;text-align:center;
+          border:2px solid #f3e8ff}
+    .stat .v{font-size:32px;font-weight:700;
+             background:linear-gradient(135deg,#ec4899 0%,#a855f7 100%);
+             -webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    .stat .l{font-size:13px;color:#6b7280;margin-top:6px;font-weight:600}
+    table{width:100%;border-collapse:collapse;font-size:13px}
+    th{background:linear-gradient(135deg,#f472b6 0%,#c084fc 100%);
+       color:#fff;padding:12px 14px;text-align:left;font-weight:600}
+    td{padding:10px 14px;border-bottom:1px solid #f3f4f6}
+    tr:nth-child(even) td{background:#fafafa}
+    tr:hover td{background:#fef3c7}
+    .btn{display:inline-block;padding:14px 32px;border-radius:12px;
+         font-weight:700;font-size:15px;text-decoration:none;
+         border:none;cursor:pointer;transition:all 0.3s}
+    .dl{background:linear-gradient(135deg,#f472b6 0%,#c084fc 100%);
+        color:#fff;box-shadow:0 4px 16px rgba(244,114,182,0.3)}
+    .dl:hover{transform:translateY(-2px);
+              box-shadow:0 6px 20px rgba(244,114,182,0.4)}
+    .nw{background:#9ca3af;color:#fff;margin-left:12px}
+    .nw:hover{background:#6b7280}
+    .btn-detail{display:inline-block;padding:6px 12px;background:linear-gradient(135deg,#f472b6,#c084fc);
+                color:#fff;text-decoration:none;border-radius:6px;font-size:12px;font-weight:600;
+                transition:all 0.3s}
+    .btn-detail:hover{transform:scale(1.05);box-shadow:0 3px 10px rgba(244,114,182,0.3)}
+    @media(max-width:768px){
+      .g3{grid-template-columns:repeat(2,1fr)}
+      .card{padding:24px}
+    }
+  </style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="card header-card">
+    <div class="logo">🥗 DASH Meal</div>
+    <h1>🎉 Evaluasi Selesai!</h1>
+    <p class="sub">Selamat <strong>{{ nama }}</strong>, Anda telah menyelesaikan 30 hari evaluasi!</p>
+  </div>
+
+  <div class="card">
+    <h2>📊 Ringkasan Evaluasi</h2>
+    <div class="g3">
+      <div class="stat"><div class="v">{{ total_ep }}</div><div class="l">Total Episode</div></div>
+      <div class="stat"><div class="v">{{ avg_rating }}/5</div><div class="l">Rata-rata Rating</div></div>
+      <div class="stat"><div class="v">{{ avg_q }}</div><div class="l">Avg Q(a) Akhir</div></div>
+    </div>
+    <div class="g3">
+      <div class="stat"><div class="v">{{ max_r }}/5</div><div class="l">Rating Tertinggi</div></div>
+      <div class="stat"><div class="v">{{ min_r }}/5</div><div class="l">Rating Terendah</div></div>
+      <div class="stat"><div class="v">{{ n_explore }}/{{ n_exploit }}</div><div class="l">Eksplorasi/Eksploitasi</div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>🏆 Top 5 Arm Terbaik</h2>
+    <table>
+      <tr><th>#</th><th>Arm ID</th><th>Q(a)</th><th>R.Nutrisi</th><th>MAPE</th>
+          <th>Dipilih</th><th>Sarapan</th><th>Siang</th><th>Malam</th><th>Detail</th></tr>
+      {% for a in top5 %}
+      <tr>
+        <td><strong>{{ loop.index }}</strong></td>
+        <td>{{ a.arm_id }}</td><td><strong>{{ a.q_value }}</strong></td>
+        <td>{{ a.reward_nutrisi }}</td><td>{{ a.mape }}%</td>
+        <td>{{ a.n_selected }}×</td>
+        <td>{{ a.sarapan_lauk }}</td><td>{{ a.siang_lauk }}</td><td>{{ a.malam_lauk }}</td>
+        <td><a href="/detail_mape/{{ loop.index }}" class="btn-detail">📊 MAPE</a></td>
+      </tr>
+      {% endfor %}
+    </table>
+  </div>
+
+  <div class="card">
+    <h2>📋 History 30 Episode</h2>
+    <table>
+      <tr><th>Hari</th><th>Arm ID</th><th>Rating</th><th>R.Nutrisi</th>
+          <th>R.Rasa</th><th>R.Gabungan</th><th>Q(a)</th><th>ε</th><th>Mode</th></tr>
+      {% for h in history %}
+      <tr>
+        <td>{{ h.episode }}</td><td>{{ h.arm_id }}</td>
+        <td>{% for _ in range(h.rating) %}★{% endfor %} {{ h.rating }}/5</td>
+        <td>{{ "%.4f"|format(h.reward_nutrisi) }}</td>
+        <td>{{ "%.4f"|format(h.reward_rasa) }}</td>
+        <td>{{ "%.4f"|format(h.reward_gabungan) }}</td>
+        <td>{{ "%.4f"|format(h.q_value) }}</td>
+        <td>{{ "%.4f"|format(h.epsilon) }}</td>
+        <td>{{ 'Eksplorasi' if h.is_explore else 'Eksploitasi' }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+  </div>
+
+  <div style="margin-top:8px;padding-bottom:32px;text-align:center">
+    <a href="/download" class="btn dl">⬇ Download Excel</a>
+    <a href="/reset" class="btn nw"
+       onclick="return confirm('Mulai evaluasi baru? Data sesi ini akan dihapus.')">
+      🔄 Evaluasi Baru
+    </a>
+  </div>
+
+</div>
+</body>
+</html>

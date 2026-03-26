@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>DASH Meal - Input Profil Pasien</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{
+      height:100%;
+      overflow:hidden;
+    }
+    body{
+      font-family:'Segoe UI',Arial,sans-serif;
+      background:linear-gradient(135deg,#fce7f3 0%,#e9d5ff 50%,#ddd6fe 100%);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:0;
+    }
+    .card{
+      background:#fff;
+      border-radius:24px;
+      box-shadow:0 25px 70px rgba(236,72,153,0.2);
+      padding:50px 60px;
+      width:750px;
+      max-height:90vh;
+      overflow-y:auto;
+    }
+    .header{
+      text-align:center;
+      margin-bottom:32px;
+      padding-bottom:24px;
+      border-bottom:3px solid #fce7f3;
+    }
+    .logo{
+      font-size:38px;
+      font-weight:800;
+      margin-bottom:10px;
+      letter-spacing:-1px;
+    }
+    .logo-text{
+      background:linear-gradient(135deg,#f472b6 0%,#c084fc 100%);
+      -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;
+      font-size:32px;
+      font-weight:800;
+    }
+    .sub{
+      color:#9ca3af;
+      font-size:15px;
+      font-weight:500;
+    }
+    .info{
+      background:linear-gradient(135deg,#fce7f3 0%,#f3e8ff 100%);
+      border-left:4px solid #f472b6;
+      padding:18px 20px;
+      border-radius:12px;
+      font-size:15px;
+      color:#831843;
+      margin-bottom:28px;
+      line-height:1.7;
+    }
+    .resume{
+      background:linear-gradient(135deg,#fce7f3 0%,#e9d5ff 100%);
+      border:2px solid #f472b6;
+      border-radius:14px;
+      padding:18px 20px;
+      margin-bottom:24px;
+      font-size:15px;
+      color:#831843;
+    }
+    .resume a{
+      color:#ec4899;
+      font-weight:700;
+      text-decoration:none;
+      border-bottom:2px solid #ec4899;
+    }
+    .resume a:hover{
+      color:#be185d;
+    }
+    .err{
+      background:linear-gradient(135deg,#fee2e2 0%,#fecaca 100%);
+      border-left:4px solid #ef4444;
+      padding:16px 18px;
+      border-radius:12px;
+      color:#b91c1c;
+      font-size:15px;
+      margin-bottom:22px;
+    }
+    h3{
+      color:#ec4899;
+      font-size:18px;
+      border-bottom:3px solid #fce7f3;
+      padding-bottom:10px;
+      margin:32px 0 18px;
+      font-weight:700;
+    }
+    label{
+      display:block;
+      font-size:15px;
+      font-weight:600;
+      color:#374151;
+      margin-bottom:8px;
+      margin-top:20px;
+    }
+    input,select{
+      width:100%;
+      padding:14px 18px;
+      border:2px solid #e5e7eb;
+      border-radius:12px;
+      font-size:16px;
+      color:#111;
+      transition:all 0.3s;
+      background:#fafafa;
+    }
+    input:focus,select:focus{
+      outline:none;
+      border-color:#f472b6;
+      box-shadow:0 0 0 4px rgba(244,114,182,0.15);
+      background:#fff;
+    }
+    .btn{
+      display:block;
+      width:100%;
+      padding:18px;
+      margin-top:36px;
+      background:linear-gradient(135deg,#f472b6 0%,#c084fc 100%);
+      color:#fff;
+      border:none;
+      border-radius:14px;
+      font-size:17px;
+      font-weight:700;
+      cursor:pointer;
+      transition:all 0.3s;
+      box-shadow:0 6px 20px rgba(244,114,182,0.35);
+    }
+    .btn:hover{
+      transform:translateY(-3px);
+      box-shadow:0 10px 30px rgba(244,114,182,0.45);
+    }
+    @media(max-width:768px){
+      .card{width:90%;padding:40px 35px}
+      .logo{font-size:32px}
+      .logo-text{font-size:28px}
+    }
+  </style>
+</head>
+<body>
+<div class="card">
+  <div class="header">
+    <div class="logo">🥗</div>
+    <div class="logo-text">DASH Meal</div>
+    <p class="sub">Sistem Rekomendasi Diet DASH dengan CMAB</p>
+  </div>
+
+  {% if resume %}
+  <div class="resume">
+    ⚠️ Ada sesi yang belum selesai atas nama <strong>{{ resume.nama }}</strong>
+    (Episode {{ resume.episode }}/30).<br><br>
+    <a href="/lanjut">▶ Lanjutkan sesi</a>
+    &nbsp;|&nbsp;
+    <a href="/reset" onclick="return confirm('Hapus sesi lama dan mulai baru?')">🗑 Mulai baru</a>
+  </div>
+  {% endif %}
+
+  {% if error %}<div class="err">⚠️ {{ error }}</div>{% endif %}
+
+  <div class="info">
+    <strong>📅 Evaluasi 30 Hari</strong><br>
+    Anda akan menerima rekomendasi menu setiap hari.<br>
+    Berikan rating, dan sistem akan belajar dari preferensi Anda!
+  </div>
+
+  <form method="POST" action="/mulai">
+    <h3>👤 Data Diri</h3>
+    <label>Nama Lengkap</label>
+    <input name="nama" placeholder="Contoh: Budi Santoso" required>
+
+    <label>Jenis Kelamin</label>
+    <select name="jenis_kelamin" required>
+      <option value="">-- Pilih --</option>
+      <option value="laki-laki">Laki-laki</option>
+      <option value="perempuan">Perempuan</option>
+    </select>
+
+    <label>Usia (tahun)</label>
+    <input type="number" name="usia" min="18" max="100" placeholder="45" required>
+
+    <label>Berat Badan (kg)</label>
+    <input type="number" name="berat" min="30" max="200" step="0.1" placeholder="70" required>
+
+    <label>Tinggi Badan (cm)</label>
+    <input type="number" name="tinggi" min="100" max="220" step="0.1" placeholder="165" required>
+
+    <label>Tingkat Aktivitas</label>
+    <select name="aktivitas" required>
+      <option value="">-- Pilih --</option>
+      <option value="sedentary">Sedentary – Jarang gerak / tidak olahraga</option>
+      <option value="moderately_active">Moderately Active – Olahraga 1–3×/minggu</option>
+      <option value="very_active">Very Active – Olahraga intensif tiap hari</option>
+      <option value="extremely_active">Extremely Active – Atlet / kerja fisik berat</option>
+    </select>
+
+    <h3>⚠️ Alergi / Pantangan</h3>
+    <label>Alergi atau pantangan makanan
+      <span style="font-weight:400;color:#9ca3af">(pisahkan koma, kosongkan jika tidak ada)</span>
+    </label>
+    <input name="alergi" placeholder="Contoh: seafood, kacang">
+
+    <button class="btn" type="submit">🚀 Dapatkan Rekomendasi</button>
+  </form>
+</div>
+</body>
+</html>

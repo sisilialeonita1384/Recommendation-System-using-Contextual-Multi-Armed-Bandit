@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hari {{ episode }}/{{ total }} – DASH Meal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: linear-gradient(135deg, #fce7f3 0%, #e9d5ff 50%, #ddd6fe 100%); min-height: 100vh; padding: 0; }
+        .container { max-width: 100%; margin: 0; background: white; border-radius: 0; box-shadow: none; overflow: hidden; }
+        .header { background: linear-gradient(135deg, #f472b6 0%, #c084fc 100%); color: white; padding: 50px 60px; }
+        .header .logo { font-size: 32px; font-weight: 800; margin-bottom: 12px; opacity: 0.95; }
+        .header h1 { font-size: 48px; margin-bottom: 16px; font-weight: 700; }
+        .header .meta { font-size: 22px; opacity: 0.9; margin-bottom: 24px; font-weight: 500; }
+        .progress-bar-bg { background: rgba(255,255,255,0.25); border-radius: 20px; height: 18px; }
+        .progress-bar-fill { background: linear-gradient(90deg, #fbbf24 0%, #f472b6 100%); height: 18px; border-radius: 20px; transition: width 0.5s ease; box-shadow: 0 2px 8px rgba(251, 191, 36, 0.4); }
+        .content { padding: 60px 80px; background: #fafafa; }
+        .badge { display: inline-block; padding: 18px 36px; border-radius: 30px; font-size: 20px; font-weight: 600; margin-bottom: 35px; box-shadow: 0 3px 12px rgba(0,0,0,0.08); }
+        .badge.explore { background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); color: #92400e; border: 2px solid #fbbf24; }
+        .badge.exploit { background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%); color: #065f46; border: 2px solid #10b981; }
+        .nutrition-info { background: white; padding: 45px; border-radius: 18px; margin-bottom: 40px; border-left: 8px solid #f472b6; box-shadow: 0 4px 16px rgba(0,0,0,0.06); }
+        .nutrition-info h3 { color: #1f2937; margin-bottom: 28px; font-size: 32px; font-weight: 700; }
+        .nutrition-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+        .nutrition-item { padding: 22px; background: linear-gradient(135deg, #fef3c7 5%, #fce7f3 100%); border-radius: 14px; border: 2px solid #f3e8ff; font-size: 19px; }
+        .nutrition-item strong { color: #ec4899; font-weight: 600; }
+        .alert { padding: 26px 32px; border-radius: 16px; margin-bottom: 40px; font-size: 20px; line-height: 1.6; border-left: 6px solid; }
+        .alert-warning { background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); color: #92400e; border-left-color: #f59e0b; }
+        .alert-success { background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%); color: #065f46; border-left-color: #10b981; }
+        .menu-section { background: white; padding: 45px; border-radius: 20px; margin-bottom: 35px; box-shadow: 0 4px 20px rgba(0,0,0,0.06); border-top: 6px solid; }
+        .menu-section.sarapan { border-top-color: #fbbf24; }
+        .menu-section.siang { border-top-color: #f472b6; }
+        .menu-section.malam { border-top-color: #c084fc; }
+        .menu-section h3 { font-size: 42px; margin-bottom: 32px; padding-bottom: 18px; border-bottom: 3px solid #f3f4f6; font-weight: 700; }
+        .menu-section.sarapan h3 { color: #f59e0b; }
+        .menu-section.siang h3 { color: #ec4899; }
+        .menu-section.malam h3 { color: #a855f7; }
+        .menu-item-card { background: #fafafa; padding: 32px; border-radius: 16px; margin-bottom: 24px; border-left: 6px solid #f472b6; transition: transform 0.2s, box-shadow 0.2s; }
+        .menu-item-card:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,0.08); }
+        .menu-item-card h4 { color: #1f2937; margin-bottom: 16px; font-size: 28px; font-weight: 700; }
+        .menu-detail { margin-bottom: 14px; color: #4b5563; line-height: 1.6; font-size: 20px; }
+        .menu-detail strong { color: #1f2937; font-weight: 600; }
+        .nutrisi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; background: white; padding: 24px; border-radius: 14px; margin-top: 16px; border: 2px solid #f3e8ff; }
+        .nutrisi-item { font-size: 18px; color: #6b7280; }
+        .nutrisi-item strong { color: #f472b6; font-weight: 600; }
+        .collapsible { cursor: pointer; padding: 20px 28px; background: linear-gradient(135deg, #f472b6 0%, #c084fc 100%); color: white; border: none; border-radius: 14px; text-align: left; width: 100%; font-size: 20px; font-weight: 600; margin-top: 16px; transition: all 0.3s; box-shadow: 0 3px 10px rgba(244, 114, 182, 0.25); }
+        .collapsible:hover { background: linear-gradient(135deg, #ec4899 0%, #a855f7 100%); transform: translateY(-1px); box-shadow: 0 5px 15px rgba(244, 114, 182, 0.35); }
+        .collapsible:after { content: '▼'; float: right; transition: transform 0.3s; font-size: 18px; }
+        .collapsible.active:after { transform: rotate(180deg); }
+        .content-collapsible { max-height: 0; overflow: hidden; transition: max-height 0.4s ease-out; background: white; border-radius: 14px; margin-top: 12px; }
+        .content-collapsible.show { max-height: 2000px; padding: 28px; border: 2px solid #f3e8ff; background: #fefefe; }
+        .content-collapsible pre { white-space: pre-wrap; line-height: 1.8; color: #374151; font-family: 'Inter', sans-serif; font-size: 18px; }
+        .nasi-card { background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); padding: 22px 32px; border-radius: 14px; margin-top: 16px; border-left: 6px solid #fbbf24; font-weight: 600; color: #92400e; font-size: 20px; }
+        .rating-section { background: white; padding: 55px; border-radius: 20px; margin-top: 50px; text-align: center; border: 5px dashed #f472b6; box-shadow: 0 4px 24px rgba(0,0,0,0.08); }
+        .rating-section h3 { color: #1f2937; margin-bottom: 32px; font-size: 36px; font-weight: 700; }
+        .stars { display: flex; justify-content: center; gap: 32px; margin: 40px 0; }
+        .star { font-size: 80px; cursor: pointer; color: #e5e7eb; transition: all 0.2s; border: none; background: none; line-height: 1; }
+        .star:hover { color: #fbbf24; transform: scale(1.25); }
+        .star.active { color: #fbbf24; filter: drop-shadow(0 4px 10px rgba(251, 191, 36, 0.5)); }
+        .submit-btn { display: none; padding: 24px 85px; background: linear-gradient(135deg, #f472b6 0%, #c084fc 100%); color: white; border: none; border-radius: 16px; font-size: 24px; font-weight: 700; cursor: pointer; margin-top: 35px; transition: all 0.3s; box-shadow: 0 6px 20px rgba(244, 114, 182, 0.3); }
+        .submit-btn:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(244, 114, 182, 0.45); }
+        .hint { font-size: 18px; color: #9ca3af; margin-top: 18px; }
+        @media (max-width: 768px) { .nutrition-grid, .nutrisi-grid { grid-template-columns: repeat(2, 1fr); } .content { padding: 35px 28px; } .header { padding: 35px 28px; } .header h1 { font-size: 32px; } .header .meta { font-size: 16px; } .menu-section h3 { font-size: 28px; } .menu-item-card h4 { font-size: 20px; } .star { font-size: 60px; } .submit-btn { padding: 18px 50px; font-size: 18px; } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">🥗 DASH Meal</div>
+            <h1>📅 Hari {{ episode }} dari {{ total }}</h1>
+            <div class="meta">Pasien: <strong>{{ nama }}</strong> | TDEE: <strong>{{ tdee }} kkal</strong> | ε = <strong>{{ epsilon }}</strong></div>
+            <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: {{ (episode / total * 100)|round|int }}%;"></div></div>
+        </div>
+        <div class="content">
+            <div class="badge {% if is_explore %}explore{% else %}exploit{% endif %}">{{ '🔍 Eksplorasi (menu acak)' if is_explore else '🎯 Eksploitasi (menu terbaik saat ini)' }} – Episode {{ episode }}/{{ total }}</div>
+            <div class="alert {% if natrium_warning.excess %}alert-warning{% else %}alert-success{% endif %}"><strong>{{ natrium_warning.kategori }}</strong><br>{{ natrium_warning.pesan }}</div>
+            <div class="nutrition-info">
+                <h3>📊 Kebutuhan Nutrisi Harian Anda</h3>
+                <div class="nutrition-grid">
+                    <div class="nutrition-item"><strong>Kalori:</strong> {{ kebutuhan.kalori|round|int }} kkal</div>
+                    <div class="nutrition-item"><strong>Karbohidrat:</strong> {{ kebutuhan.karbohidrat|round|int }} g</div>
+                    <div class="nutrition-item"><strong>Protein:</strong> {{ kebutuhan.protein|round|int }} g</div>
+                    <div class="nutrition-item"><strong>Lemak:</strong> {{ kebutuhan.lemak|round|int }} g</div>
+                    <div class="nutrition-item"><strong>Lemak Jenuh:</strong> ≤{{ kebutuhan.lemak_jenuh|round|int }} g</div>
+                    <div class="nutrition-item"><strong>Kolesterol:</strong> ≤150 mg</div>
+                    <div class="nutrition-item"><strong>Natrium:</strong> ≤{{ kebutuhan.natrium|round|int }} mg</div>
+                    <div class="nutrition-item"><strong>Kalium:</strong> {{ kebutuhan.kalium|round|int }} mg</div>
+                    <div class="nutrition-item"><strong>Serat:</strong> {{ kebutuhan.serat|round|int }} g</div>
+                </div>
+            </div>
+            
+            {% macro render_menu_item(item, icon, title) %}
+            {% if item %}
+            <div class="menu-item-card">
+                <h4>{{ icon }} {{ title }}: {{ item.nama }}</h4>
+                <div class="menu-detail"><strong>Porsi:</strong> {{ item.porsi }}</div>
+                <button class="collapsible">📊 Info Nutrisi (per porsi)</button>
+                <div class="content-collapsible">
+                    <div class="nutrisi-grid">
+                        <div class="nutrisi-item"><strong>Kalori:</strong> {{ item.nutrisi.kalori|round|int }} kkal</div>
+                        <div class="nutrisi-item"><strong>Protein:</strong> {{ item.nutrisi.protein|round(1) }} g</div>
+                        <div class="nutrisi-item"><strong>Karbohidrat:</strong> {{ item.nutrisi.karbohidrat|round(1) }} g</div>
+                        <div class="nutrisi-item"><strong>Lemak:</strong> {{ item.nutrisi.lemak|round(1) }} g</div>
+                        <div class="nutrisi-item"><strong>Lemak Jenuh:</strong> {{ item.nutrisi.lemak_jenuh|round(1) }} g</div>
+                        <div class="nutrisi-item"><strong>Kolesterol:</strong> {{ item.nutrisi.kolesterol|round|int }} mg</div>
+                        <div class="nutrisi-item"><strong>Natrium:</strong> {{ item.nutrisi.natrium|round|int }} mg</div>
+                        <div class="nutrisi-item"><strong>Kalium:</strong> {{ item.nutrisi.kalium|round|int }} mg</div>
+                        <div class="nutrisi-item"><strong>Serat:</strong> {{ item.nutrisi.serat|round(1) }} g</div>
+                    </div>
+                </div>
+                {% if item.bahan and item.bahan != '-' and item.bahan != 'nan' %}
+                <button class="collapsible">🥘 Bahan-bahan</button>
+                <div class="content-collapsible"><pre>{{ item.bahan }}</pre></div>
+                {% endif %}
+                {% if item.cara_pembuatan and item.cara_pembuatan != '-' and item.cara_pembuatan != 'nan' %}
+                <button class="collapsible">👨‍🍳 Cara Pembuatan</button>
+                <div class="content-collapsible"><pre>{{ item.cara_pembuatan }}</pre></div>
+                {% endif %}
+                {% if item.waktu_memasak and item.waktu_memasak != '-' and item.waktu_memasak != 'nan' %}
+                <div class="menu-detail" style="margin-top: 12px;"><strong>⏱️ Waktu Memasak:</strong> {{ item.waktu_memasak }}</div>
+                {% endif %}
+            </div>
+            {% endif %}
+            {% endmacro %}
+            
+            <div class="menu-section sarapan">
+                <h3>🌅 Sarapan</h3>
+                {{ render_menu_item(rekomendasi.sarapan.lauk, '🍗', 'Lauk') }}
+                {{ render_menu_item(rekomendasi.sarapan.sayur, '🥬', 'Sayur') }}
+                {{ render_menu_item(rekomendasi.sarapan.buah, '🍎', 'Buah') }}
+                {{ render_menu_item(rekomendasi.sarapan.susu, '🥛', 'Susu') }}
+                <div class="nasi-card"><strong>🍚 Nasi:</strong> {{ rekomendasi.sarapan.nasi }}</div>
+            </div>
+            
+            <div class="menu-section siang">
+                <h3>☀️ Makan Siang</h3>
+                {{ render_menu_item(rekomendasi.siang.lauk, '🍗', 'Lauk') }}
+                {{ render_menu_item(rekomendasi.siang.sayur, '🥬', 'Sayur') }}
+                {{ render_menu_item(rekomendasi.siang.buah, '🍎', 'Buah') }}
+                {{ render_menu_item(rekomendasi.siang.susu, '🥛', 'Susu') }}
+                <div class="nasi-card"><strong>🍚 Nasi:</strong> {{ rekomendasi.siang.nasi }}</div>
+            </div>
+            
+            <div class="menu-section malam">
+                <h3>🌙 Makan Malam</h3>
+                {{ render_menu_item(rekomendasi.malam.lauk, '🍗', 'Lauk') }}
+                {{ render_menu_item(rekomendasi.malam.sayur, '🥬', 'Sayur') }}
+                {{ render_menu_item(rekomendasi.malam.buah, '🍎', 'Buah') }}
+                {{ render_menu_item(rekomendasi.malam.susu, '🥛', 'Susu') }}
+                <div class="nasi-card"><strong>🍚 Nasi:</strong> {{ rekomendasi.malam.nasi }}</div>
+            </div>
+            
+            <div class="rating-section">
+                <h3>⭐ Seberapa suka Anda dengan kombinasi menu ini?</h3>
+                <div class="stars">{% for i in range(1, 6) %}<button class="star" data-rating="{{ i }}" onclick="setRating({{ i }})">★</button>{% endfor %}</div>
+                <form id="rating-form" method="POST" action="/submit_rating">
+                    <input type="hidden" name="rating" id="rating-input" value="">
+                    <input type="hidden" name="arm_id" value="{{ arm_id }}">
+                    <input type="hidden" name="episode" value="{{ episode }}">
+                    <button type="submit" class="submit-btn" id="submit-btn">{% if episode < total %}Lanjut ke Hari {{ episode + 1 }} →{% else %}Selesai & Lihat Hasil 🎉{% endif %}</button>
+                </form>
+                <p class="hint">Klik bintang lalu tekan tombol di atas</p>
+            </div>
+        </div>
+    </div>
+    <script>
+        function setRating(rating) {
+            document.getElementById('rating-input').value = rating;
+            document.getElementById('submit-btn').style.display = 'inline-block';
+            document.querySelectorAll('.star').forEach((star, index) => {
+                if (index < rating) star.classList.add('active');
+                else star.classList.remove('active');
+            });
+        }
+        document.querySelectorAll('.collapsible').forEach(button => {
+            button.addEventListener('click', function() {
+                this.classList.toggle('active');
+                const content = this.nextElementSibling;
+                if (content && content.classList.contains('content-collapsible')) {
+                    content.classList.toggle('show');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
